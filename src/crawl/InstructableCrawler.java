@@ -1,7 +1,10 @@
 package crawl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -24,7 +27,8 @@ public class InstructableCrawler extends WebCrawler {
 	public boolean shouldVisit(WebURL url) 
 	{
 		String href = url.getURL().toLowerCase();
-		return !FILTERS.matcher(href).matches() && href.startsWith("http://www.ics.uci.edu/");
+		return !FILTERS.matcher(href).matches() && href.startsWith("http://www.instructables.com/id/");
+		//return !FILTERS.matcher(href).matches() && href.startsWith("http://www.ics.uci.edu/");
 	}
 
 /**
@@ -38,14 +42,33 @@ public class InstructableCrawler extends WebCrawler {
 		System.out.println("URL: " + url);
 		if (page.getParseData() instanceof HtmlParseData) 
 		{
+			//System.out.println("Inside instance of html");
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String text = htmlParseData.getText();
 			String html = htmlParseData.getHtml();
-			List<WebURL> links = htmlParseData.getOutgoingUrls();
+			System.out.println(html);
+			//Pattern pattern = Pattern.compile("googletag\\.pubads\\(\\)\\.setTargeting(.?*);");
+			
+			Pattern pattern = Pattern.compile("googletag.cmd.push(function()");
+			Matcher matcher = pattern.matcher(html);
+			/*List<WebURL> links = htmlParseData.getOutgoingUrls();
 			
 			System.out.println("Text length: " + text.length());
 			System.out.println("Html length: " + html.length());
-			System.out.println("Number of outgoing links: " + links.size());
+			System.out.println("Number of outgoing links: " + links.size());*/
+			System.out.println(matcher.matches());
+			/*List<String> listMatches = new ArrayList<String>();
+
+	        while(matcher.find())
+	        {
+	            listMatches.add(matcher.group(2));
+	        }
+
+	        for(String s : listMatches)
+	        {
+	            System.out.println(s);
+	        }*/
+			
 		}
 	}
 
