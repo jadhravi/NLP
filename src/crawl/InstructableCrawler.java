@@ -1,10 +1,20 @@
 package crawl;
-
+import controller.InstructableController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
+
+
+
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -26,8 +36,24 @@ public class InstructableCrawler extends WebCrawler {
 @Override
 	public boolean shouldVisit(WebURL url) 
 	{
+		//System.out.println("Visiting url"+url.toString());
 		String href = url.getURL().toLowerCase();
-		return !FILTERS.matcher(href).matches() && href.startsWith("http://www.instructables.com/id/");
+		if(FILTERS.matcher(href).matches())
+			return false;
+		else if ((href.startsWith("http://www.instructables.com/id/") && href.endsWith("/")) /*|| (href.endsWith("?allsteps")*/)
+		{
+			System.out.println(" Url is "+href);
+			if(!href.endsWith("?allsteps"))
+			{
+				InstructableController.addCustomSeed(href+"?ALLSTEPS");
+				return false;
+			}
+			return true;
+		}
+		else
+		{	
+			return false;
+		}
 		//return !FILTERS.matcher(href).matches() && href.startsWith("http://www.ics.uci.edu/");
 	}
 
@@ -46,28 +72,24 @@ public class InstructableCrawler extends WebCrawler {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String text = htmlParseData.getText();
 			String html = htmlParseData.getHtml();
-			System.out.println(html);
+			//System.out.println(html);
 			//Pattern pattern = Pattern.compile("googletag\\.pubads\\(\\)\\.setTargeting(.?*);");
 			
-			Pattern pattern = Pattern.compile("googletag.cmd.push(function()");
+			/*Pattern pattern = Pattern.compile("googletag.cmd.push(function()");
 			Matcher matcher = pattern.matcher(html);
 			/*List<WebURL> links = htmlParseData.getOutgoingUrls();
 			
 			System.out.println("Text length: " + text.length());
 			System.out.println("Html length: " + html.length());
-			System.out.println("Number of outgoing links: " + links.size());*/
-			System.out.println(matcher.matches());
-			/*List<String> listMatches = new ArrayList<String>();
-
-	        while(matcher.find())
-	        {
-	            listMatches.add(matcher.group(2));
-	        }
-
-	        for(String s : listMatches)
-	        {
-	            System.out.println(s);
-	        }*/
+			System.out.println("Number of outgoing links: " + links.size());
+			System.out.println(matcher.matches());*/
+			Document doc = Jsoup.parse(html);
+			Element content = doc.getElementById("ible-header-inner");
+			Elements links=content.getElementsByTag("h1");
+			for(Element link:links)
+			{
+				System.out.println(link.text());
+			}
 			
 		}
 	}

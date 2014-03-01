@@ -12,6 +12,7 @@ public class InstructableController {
 	/**
 	 * @param args
 	 */
+	static CrawlController controller;
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		String crawlStorageFolder = "/data/crawl/root";
@@ -26,7 +27,7 @@ public class InstructableController {
         PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
-        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+        controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
         /*
          * For each crawl, you need to add some seed urls. These are the first
@@ -34,6 +35,8 @@ public class InstructableController {
          * which are found in these pages
          */
         controller.addSeed("http://www.instructables.com/id/Valentine-Pizza/");
+        
+        
         /*controller.addSeed("http://www.ics.uci.edu/~welling/");
         controller.addSeed("http://www.ics.uci.edu/~lopes/");
         controller.addSeed("http://www.ics.uci.edu/");*/
@@ -44,6 +47,12 @@ public class InstructableController {
          */
         controller.start(InstructableCrawler.class, numberOfCrawlers);    
 
+	}
+	public static void addCustomSeed(String urlStr)
+	{
+		System.out.println("Adding custom seed "+urlStr);
+		controller.addSeed(urlStr);
+		//controller.start(InstructableCrawler.class, 7);  
 	}
 
 }
