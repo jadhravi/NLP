@@ -16,7 +16,7 @@ public class InstructableController {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		String crawlStorageFolder = "/data/crawl/root";
-        int numberOfCrawlers = 7;
+        int numberOfCrawlers = 1;
 
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
@@ -34,7 +34,7 @@ public class InstructableController {
          * URLs that are fetched and then the crawler starts following links
          * which are found in these pages
          */
-        controller.addSeed("http://www.instructables.com/id/Valentine-Pizza/");
+        controller.addSeed("http://www.instructables.com/id/Drying-Fresh-Herbs/");
         
         
         /*controller.addSeed("http://www.ics.uci.edu/~welling/");
