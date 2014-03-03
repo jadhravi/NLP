@@ -42,7 +42,7 @@ public class InstructableController {
          * URLs that are fetched and then the crawler starts following links
          * which are found in these pages
          */
-        controller.addSeed("http://www.instructables.com/tag/type-id/category-food/?&offset=29");
+        controller.addSeed("http://www.instructables.com/tag/type-id/category-food/?&offset==14123");
         
         
         /*controller.addSeed("http://www.ics.uci.edu/~welling/");

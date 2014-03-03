@@ -255,7 +255,7 @@ public class InstructableCrawler extends WebCrawler {
 		}
 		else
 		{
-			if(url.startsWith("www.instructables.com/group") || url.startsWith("www.instructables.com/contest") || url.startsWith("www.instructables.com/community") || url.startsWith("www.instructables.com/workshop") || url.startsWith("www.instructables.com/about") || url.startsWith("www.instructables.com/member") )
+			if(url.startsWith("http://www.instructables.com/group") || url.startsWith("http://www.instructables.com/contest") || url.startsWith("http://www.instructables.com/community") || url.startsWith("http://www.instructables.com/workshop") || url.startsWith("http://www.instructables.com/about") || url.startsWith("http://www.instructables.com/member") || url.startsWith("http://www.instructables.com/answers") || url.startsWith("http://www.instructables.com/tag/type-question/"))
 				return false;
 			else
 				return true;
