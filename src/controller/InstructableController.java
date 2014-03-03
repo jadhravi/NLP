@@ -1,5 +1,13 @@
 package controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import crawl.InstructableCrawler;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -34,7 +42,7 @@ public class InstructableController {
          * URLs that are fetched and then the crawler starts following links
          * which are found in these pages
          */
-        controller.addSeed("http://www.instructables.com/id/Drying-Fresh-Herbs/");
+        controller.addSeed("http://www.instructables.com/tag/type-id/category-food/?&offset=29");
         
         
         /*controller.addSeed("http://www.ics.uci.edu/~welling/");
@@ -54,5 +62,6 @@ public class InstructableController {
 		controller.addSeed(urlStr);
 		//controller.start(InstructableCrawler.class, 7);  
 	}
+	
 
 }

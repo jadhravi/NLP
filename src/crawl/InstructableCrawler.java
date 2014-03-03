@@ -1,6 +1,8 @@
 package crawl;
 import controller.InstructableController;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,6 +15,13 @@ import java.util.regex.Pattern;
 
 
 
+
+
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,7 +38,7 @@ public class InstructableCrawler extends WebCrawler {
 	private enum TypeOfPage{OTHER, ALLSTEPS, AUTHOR};
 	
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|bmp|gif|jpe?g" 
-            + "|png|tiff?|mid|mp2|mp3|mp4"
+            + "|png|tiff|mid|mp2|mp3|mp4"
             + "|wav|avi|mov|mpeg|ram|m4v|pdf" 
             + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
     
@@ -47,12 +56,15 @@ public class InstructableCrawler extends WebCrawler {
 
 		if(href.endsWith("?ALLSTEPS"))
 		{	
-			System.out.println("returning true for url "+href);
+			System.out.println("href is "+href);
+			//InstructableController.addCustomSeed(href+"=0");
+			getAllCategoryFieldsByHttp(href);
 			return true;
 		
 		}
 		else
-		{	if(href.endsWith("/") && (href.indexOf("?lang=")==-1) && !FILTERS.matcher(href).matches())
+		{	
+			if(href.startsWith("http://www.instructables.com/")&&(href.indexOf("?lang=")==-1) && !FILTERS.matcher(href).matches() && isUrlFoodCategory(href))
 				return true;
 			return false;
 		}
@@ -64,9 +76,10 @@ public class InstructableCrawler extends WebCrawler {
 */
 @Override
 	public void visit(Page page) 
-	{          
-		String url = page.getWebURL().getURL();
-		System.out.println("URL: " + url);
+	{ 
+		
+		String url = page.getWebURL().toString();
+		System.out.println("URL is : " + url);
 		if (page.getParseData() instanceof HtmlParseData) 
 		{
 			//System.out.println("Inside instance of html");
@@ -77,7 +90,7 @@ public class InstructableCrawler extends WebCrawler {
 					HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 					String text = htmlParseData.getText();
 					String html = htmlParseData.getHtml();
-					this.getAllCategoryFields(html);
+					this.getAllCategoryFields(page);
 					break;
 				
 				case AUTHOR:
@@ -92,7 +105,17 @@ public class InstructableCrawler extends WebCrawler {
 			
 		}
 	}
-	public void getAllCategoryFields(String html)
+	public void getAllCategoryFieldsByHttp(String url)
+	{
+		String html=visitPage(url);
+		if(isAllStepsPage(html) && pageCategory(html, "food"))
+		{	
+			InstructablePage i=new InstructablePage(html, url);
+		
+		}
+		
+	}
+	public void getAllCategoryFields(Page page)
 	{
 		//Here we are getting all the required crawling data from the html string presented to us.
 		
@@ -110,12 +133,15 @@ public class InstructableCrawler extends WebCrawler {
 		 * Comments
 		 */
 		
+		HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
+		String text = htmlParseData.getText();
+		String html = htmlParseData.getHtml();
 		Document doc = Jsoup.parse(html);
 		String title=doc.getElementsByTag("title").text();
 		System.out.println("Title of the page is "+title);
 		//System.out.println(html);
-		System.out.println("HTML size is "+html.length());
-		InstructablePage i=new InstructablePage(html);
+		//System.out.println("HTML size is "+html.length());
+		InstructablePage i=new InstructablePage(page);
 	}
 	
 	public TypeOfPage findTypeOfPage(Page page)
@@ -124,35 +150,110 @@ public class InstructableCrawler extends WebCrawler {
 		//The common cases include not crawling pages we have already crawled. Finding if the page is to be crawled by categorizing 
 		//if it is an author page or allstep page. Additional tests to be added.
 		//At this point we would like to visit the author and the allsteps page only.
+		HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 		
+		String html = htmlParseData.getHtml();
 		
 		TypeOfPage t;
+	
 		String url=page.getWebURL().toString();
-		if(url.endsWith("?ALLSTEPS") && pageCategory(page, categoryOfPage))
+		if(isAllStepsPage(html) && pageCategory(html, categoryOfPage))
 			t=TypeOfPage.ALLSTEPS;
 		else
 		{
 			t=TypeOfPage.OTHER;
 		}
+		//System.out.println("Url is "+url);
+		System.out.println(" Type of page is "+t);
 		return t;
 	}
-	public boolean pageCategory(Page page, String category)
+	public boolean pageCategory(String html, String category)
 	{
 		String str="googletag.pubads().setTargeting(\"category\", \""+category+"\")";
 		//System.out.println("Google ads string is "+str);
-		HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-		String text = htmlParseData.getText();
-		String html = htmlParseData.getHtml();
+		
 		if(html.indexOf(str)!=-1)
 		{	
 			
-			//System.out.println("pageCategory returning true for url "+page.getWebURL().toString());
+			System.out.println("pageCategory returning true");
 			return true;
 		
 		}
 		else
+		{	
+			System.out.println("pageCategory returning false");
 			return false;
+		
+		}
 				
+	}
+	public boolean isAllStepsPage(String html)
+	{
+		
+		
+		Document doc=Jsoup.parse(html);
+		Element e=doc.getElementById("ible-header");
+		if(e==null)
+		{	
+			return false;
+		
+		}
+		else
+		{
+			String str=e.attr("data-allsteps");
+			System.out.println(str);
+			if(str.equalsIgnoreCase("false"))
+				return false;
+			else
+				return true;
+		}
+				
+	}
+	public String visitPage(String url)
+	{
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpGet request = new HttpGet(url);
+	 
+		// add request header
+		StringBuffer result = new StringBuffer();
+		try
+		{
+			request.addHeader("User-Agent", "");
+			HttpResponse response = client.execute(request);
+		 
+			System.out.println("Response Code : " 
+		                + response.getStatusLine().getStatusCode());
+		 
+			
+			
+			BufferedReader rd = new BufferedReader(
+				new InputStreamReader(response.getEntity().getContent()));
+			
+			
+			String line = "";
+			String res="";
+			while ((line = rd.readLine()) != null) {
+				result.append(line);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.toString()+" Exception ");
+		}
+		return result.toString();
+	}
+	public boolean isUrlFoodCategory(String url)
+	{
+		if(url.indexOf("category")!=-1)
+		{
+			if(url.indexOf("category-food")!=-1)
+			{
+				return true;
+			}
+			else
+				return false;
+		}
+		return true;
 	}
 
 }
