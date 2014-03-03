@@ -253,7 +253,14 @@ public class InstructableCrawler extends WebCrawler {
 			else
 				return false;
 		}
-		return true;
+		else
+		{
+			if(url.startsWith("www.instructables.com/group") || url.startsWith("www.instructables.com/contest") || url.startsWith("www.instructables.com/community") || url.startsWith("www.instructables.com/workshop") || url.startsWith("www.instructables.com/about") || url.startsWith("www.instructables.com/member") )
+				return false;
+			else
+				return true;
+		}
+
 	}
 
 }
