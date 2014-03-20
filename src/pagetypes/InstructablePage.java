@@ -205,16 +205,27 @@ public class InstructablePage extends BasicPage {
 			{
 				if(c.className().startsWith("comment-entry clearfix"))
 				{
+					
 					Elements all=c.getAllElements();
+					boolean proAuthor=false;
+					if(all.hasClass("pro-img"))
+						proAuthor=true;
 					for(Element a:all)
 					{
-						if(a.className().equalsIgnoreCase("author-link"))
+						/*if(a.className().equalsIgnoreCase("author-link"))
 						{
 							allComments+="\nFrom: "+a.text();
 						}
 						if(a.className().equalsIgnoreCase("author-link pro"))
 						{
 							allComments+="\nFrom: <Pro Author>"+a.text();
+						}*/
+						if(a.className().indexOf("author-link")!=-1)
+						{
+							if(proAuthor)
+								allComments+="\nFrom: <Pro Author>"+a.text();
+							else
+								allComments+="\nFrom: "+a.text();	
 						}
 						if(a.className().equalsIgnoreCase("in-reply-to"))
 						{
@@ -316,10 +327,10 @@ public class InstructablePage extends BasicPage {
 		try {
 			 
 			//String content = "This is the content to write into file";
-				File file = new File("C://Users/rjadhav/Instructable/InstructionsFiles/"+fname+".txt");
+				File file = new File("C://Users/rjadhav/Instructable/if1/"+fname+".txt");
 			
 				if(withhtml==1)
-					file = new File("C://Users/rjadhav/Instructable/InstructionsFilesWithHTML/"+fname+".txt");	
+					file = new File("C://Users/rjadhav/Instructable/ifh1/"+fname+".txt");	
 			
 			
 			if (!file.exists()) {

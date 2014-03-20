@@ -108,7 +108,7 @@ public class InstructableCrawler extends WebCrawler {
 	public void getAllCategoryFieldsByHttp(String url)
 	{
 		String html=visitPage(url);
-		if(isAllStepsPage(html) && pageCategory(html, "food"))
+		if(isAllStepsPage(html) && pageCategory(html, categoryOfPage))
 		{	
 			InstructablePage i=new InstructablePage(html, url);
 		

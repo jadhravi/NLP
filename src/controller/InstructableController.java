@@ -28,7 +28,7 @@ public class InstructableController {
 
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
-
+        config.setResumableCrawling(true);
         /*
          * Instantiate the controller for this crawl.
          */
